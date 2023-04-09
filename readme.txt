@@ -4,4 +4,5 @@
    https://curl.se/download/curl-7.32.0.zip
    cmake -A x64 ..
    and use vs build it
+4. debug  download part， can report progree
 
