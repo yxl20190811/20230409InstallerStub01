@@ -1,10 +1,14 @@
-﻿#include <iostream>
+﻿
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
+
 #include <curl/curl.h>
-//#include "minizip/zip.h"
-//#include "minizip/unzip.h"
+#include "contrib/minizip/zip.h"
+#include "contrib/minizip/unzip.h"
+#include <direct.h>
+
 
 // Callback function for curl to write downloaded data to file
 static size_t write_data(void* ptr, size_t size, size_t nmemb, void* stream) {
@@ -56,7 +60,6 @@ bool downloadFile(const std::string& url, const std::string& path) {
 }
 
 // 解压缩 ZIP 文件并保存到指定目录
-/*
 bool extractZip(const std::string& zipPath, const std::string& extractPath) {
     unzFile zipFile = unzOpen(zipPath.c_str());
     if (!zipFile) {
@@ -87,7 +90,7 @@ bool extractZip(const std::string& zipPath, const std::string& extractPath) {
         std::string extractFilePath = extractPath + "/" + entryName;
         if (entryName.back() == '/') {
             // 如果是目录，则创建目录
-            if (mkdir(extractFilePath.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
+            if (_mkdir(extractFilePath.c_str()) == -1) {
                 std::cerr << "Could not create directory: " << extractFilePath << '\n';
                 unzCloseCurrentFile(zipFile);
                 unzClose(zipFile);
@@ -127,7 +130,7 @@ bool extractZip(const std::string& zipPath, const std::string& extractPath) {
     std::cout << "Extract succeeded.\n";
     return true;
 }
-*/
+
 
 int main() {
     // 下载 ZIP 文件到临时目录
@@ -137,13 +140,13 @@ int main() {
     if (downloadFile(url, zipPath)) {
         // 解压缩 ZIP 文件到指定目录
         std::string extractPath = "/path/to/extract";
-        /*
+        
         if (extractZip(zipPath, extractPath)) {
             // 删除临时文件
-            remove(zipPath.c_str());
+            remove(zipPath);
             return 0;
         }
-        */
+        
     }
     // 如果发生错误，则退出程序并返回非零错误代码
     return 1;

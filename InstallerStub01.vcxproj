@@ -116,10 +116,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\hh\git\20230409InstallerStub01\minizip-ng\vs\_deps\zlib-build;C:\hh\git\20230409InstallerStub01\minizip-ng\third-party\zlib;C:\hh\git\20230409InstallerStub01\curl\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\hh\git\20230409InstallerStub01\minizip-ng\vs\_deps\zlib-build\Debug;C:\hh\git\20230409InstallerStub01\minizip-ng\vs\_deps\zstd-build\lib\Debug;C:\hh\git\20230409InstallerStub01\minizip-ng\vs\_deps\liblzma-build\Debug;C:\hh\git\20230409InstallerStub01\minizip-ng\vs\Debug;C:\hh\git\20230409InstallerStub01\curl\vs\lib\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcurl-d_imp.lib;libminizip.lib;bzip2.lib;liblzma.lib;zstd_static.lib;zlibstaticd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
