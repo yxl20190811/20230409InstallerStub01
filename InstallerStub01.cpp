@@ -1,7 +1,10 @@
 ﻿#include <iostream>
-#include <string>
 #include <fstream>
+#include <sstream>
+#include <string>
 #include <curl/curl.h>
+//#include "minizip/zip.h"
+//#include "minizip/unzip.h"
 
 // Callback function for curl to write downloaded data to file
 static size_t write_data(void* ptr, size_t size, size_t nmemb, void* stream) {
@@ -52,15 +55,99 @@ bool downloadFile(const std::string& url, const std::string& path) {
     return false;
 }
 
-int main() {
-    std::string url = "https://example.com/package.zip";
-    std::string path = "package.zip";
-    bool success = downloadFile(url, path);
-    if (success) {
-        std::cout << "Download completed successfully!\n";
+// 解压缩 ZIP 文件并保存到指定目录
+/*
+bool extractZip(const std::string& zipPath, const std::string& extractPath) {
+    unzFile zipFile = unzOpen(zipPath.c_str());
+    if (!zipFile) {
+        std::cerr << "Could not open ZIP file: " << zipPath << '\n';
+        return false;
     }
-    else {
-        std::cout << "Download failed!\n";
+    unz_global_info globalInfo;
+    if (unzGetGlobalInfo(zipFile, &globalInfo) != UNZ_OK) {
+        std::cerr << "Could not get global ZIP info.\n";
+        unzClose(zipFile);
+        return false;
     }
-    return 0;
+    char buffer[1024];
+    for (uLong i = 0; i < globalInfo.number_entry; i++) {
+        unz_file_info fileInfo;
+        if (unzGetCurrentFileInfo(zipFile, &fileInfo, buffer, sizeof(buffer), NULL, 0, NULL, 0) != UNZ_OK) {
+            std::cerr << "Could not get file info for file #" << i << ".\n";
+            unzClose(zipFile);
+            return false;
+        }
+        std::string entryName(buffer, fileInfo.size_filename);
+        if (unzOpenCurrentFile(zipFile) != UNZ_OK) {
+            std::cerr << "Could not open file #" << i << " in ZIP.\n";
+            unzClose(zipFile);
+            return false;
+        }
+
+        std::string extractFilePath = extractPath + "/" + entryName;
+        if (entryName.back() == '/') {
+            // 如果是目录，则创建目录
+            if (mkdir(extractFilePath.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
+                std::cerr << "Could not create directory: " << extractFilePath << '\n';
+                unzCloseCurrentFile(zipFile);
+                unzClose(zipFile);
+                return false;
+            }
+        }
+        else {
+            // 如果是文件，则创建文件并写入数据
+            std::ofstream outFile(extractFilePath, std::ios::binary);
+            if (!outFile) {
+                std::cerr << "Could not create file: " << extractFilePath << '\n';
+                unzCloseCurrentFile(zipFile);
+                unzClose(zipFile);
+                return false;
+            }
+            int result = UNZ_OK;
+            do {
+                result = unzReadCurrentFile(zipFile, buffer, sizeof(buffer));
+                if (result < 0) {
+                    std::cerr << "Error " << result << " while reading file #" << i << " in ZIP.\n";
+                    unzCloseCurrentFile(zipFile);
+                    unzClose(zipFile);
+                    return false;
+                }
+                if (result > 0) {
+                    outFile.write(buffer, result);
+                }
+            } while (result > 0);
+            outFile.close();
+        }
+        unzCloseCurrentFile(zipFile);
+        if (unzGoToNextFile(zipFile) != UNZ_OK) {
+            break;
+        }
+    }
+    unzClose(zipFile);
+    std::cout << "Extract succeeded.\n";
+    return true;
 }
+*/
+
+int main() {
+    // 下载 ZIP 文件到临时目录
+    std::string url = "https://example.com/package.zip";
+    char zipPath[MAX_PATH];
+    tmpnam_s(zipPath, MAX_PATH);
+    if (downloadFile(url, zipPath)) {
+        // 解压缩 ZIP 文件到指定目录
+        std::string extractPath = "/path/to/extract";
+        /*
+        if (extractZip(zipPath, extractPath)) {
+            // 删除临时文件
+            remove(zipPath.c_str());
+            return 0;
+        }
+        */
+    }
+    // 如果发生错误，则退出程序并返回非零错误代码
+    return 1;
+}
+
+
+
